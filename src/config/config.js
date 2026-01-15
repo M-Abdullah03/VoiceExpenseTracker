@@ -30,8 +30,11 @@ const config = {
   AI_PARSE_RATE_LIMIT_PRO: parseInt(process.env.AI_PARSE_RATE_LIMIT_PRO || '1000', 10), // per day
   MAX_TRANSCRIPTION_LENGTH: parseInt(process.env.MAX_TRANSCRIPTION_LENGTH || '5000', 10),
 
-  // Email (for OTP - using console.log in MVP)
-  EMAIL_FROM: process.env.EMAIL_FROM || 'noreply@voiceexpense.com',
+  // Email configuration
+  email: {
+    apiKey: process.env.EMAIL_API_KEY,
+    from: process.env.EMAIL_FROM || 'noreply@voiceexpense.com',
+  },
 
   // Pagination
   DEFAULT_PAGE_SIZE: parseInt(process.env.DEFAULT_PAGE_SIZE || '50', 10),

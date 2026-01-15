@@ -2,6 +2,7 @@ const User = require('../models/User');
 const jwtService = require('../services/jwtService');
 const otpService = require('../services/otpService');
 const oauthService = require('../services/oauthService');
+const emailService = require('../services/emailService');
 const { createAuthenticationError, createValidationError, ErrorCodes } = require('../utils/errors');
 
 class AuthController {
@@ -71,6 +72,10 @@ class AuthController {
 
       // Generate JWT token
       const token = jwtService.generateToken(user._id);
+
+      // Send welcome email (don't await to avoid blocking response)
+      emailService.sendWelcomeEmail(user.email, user.email.split('@')[0])
+        .catch(err => console.error('Failed to send welcome email:', err));
 
       res.json({
         success: true,

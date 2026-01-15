@@ -1,5 +1,6 @@
 const OTP = require('../models/OTP');
 const config = require('../config/config');
+const emailService = require('./emailService');
 
 class OTPService {
   generateOTP() {
@@ -39,18 +40,26 @@ class OTPService {
   }
 
   async sendOTP(email, otp) {
-    // In MVP, we'll just log to console
-    // In production, integrate with email service (SendGrid, AWS SES, etc.)
-    console.log('-----------------------------------');
-    console.log(`OTP for ${email}: ${otp}`);
-    console.log('-----------------------------------');
-
-    // TODO: Integrate with email service
-    // await emailService.send({
-    //   to: email,
-    //   subject: 'Your VoiceExpense Verification Code',
-    //   text: `Your verification code is: ${otp}`,
-    // });
+    try {
+      // Send email using Brevo service
+      const emailSent = await emailService.sendOTPEmail(email, otp);
+      
+      if (!emailSent) {
+        // Fallback to console logging if email fails
+        console.log('-----------------------------------');
+        console.log(`OTP for ${email}: ${otp}`);
+        console.log('-----------------------------------');
+      }
+      
+      return emailSent;
+    } catch (error) {
+      console.error('Error sending OTP email:', error);
+      // Fallback to console logging
+      console.log('-----------------------------------');
+      console.log(`OTP for ${email}: ${otp}`);
+      console.log('-----------------------------------');
+      return false;
+    }
   }
 }
 
