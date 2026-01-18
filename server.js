@@ -22,9 +22,7 @@ app.use(helmet());
 
 // CORS configuration
 app.use(cors({
-  origin: config.NODE_ENV === 'production'
-    ? process.env.ALLOWED_ORIGINS?.split(',') || []
-    : '*',
+  origin: '*',
   credentials: true,
 }));
 
