@@ -216,7 +216,40 @@ class AuthController {
             email_verified: user.email_verified,
             trial_started_at: user.trial_started_at,
             created_at: user.created_at,
+            preferences: user.preferences || {
+              currency: 'USD',
+              name: null,
+              monthly_budget: null,
+            },
           },
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Update user preferences
+  async updatePreferences(req, res, next) {
+    try {
+      const user = req.user;
+      const { currency, name, monthly_budget } = req.body;
+
+      const updates = {};
+      if (currency !== undefined) updates['preferences.currency'] = currency;
+      if (name !== undefined) updates['preferences.name'] = name;
+      if (monthly_budget !== undefined) updates['preferences.monthly_budget'] = monthly_budget;
+
+      const updatedUser = await User.findByIdAndUpdate(
+        user._id,
+        { $set: updates },
+        { new: true, runValidators: true }
+      );
+
+      res.json({
+        success: true,
+        data: {
+          preferences: updatedUser.preferences,
         },
       });
     } catch (error) {

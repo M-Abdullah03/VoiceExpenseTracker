@@ -18,5 +18,6 @@ router.post('/google', validateGoogleToken, authController.googleAuth);
 
 // Protected routes
 router.get('/me', authenticate, authController.getMe);
+router.put('/preferences', authenticate, authController.updatePreferences);
 
 module.exports = router;

@@ -9,7 +9,7 @@
 const axios = require('axios');
 
 // Configuration
-const BASE_URL = 'http://localhost:5000';
+const BASE_URL = 'https://voice-expense-tracker-mocha.vercel.app';
 const TEST_EMAIL = `test-${Date.now()}@example.com`;
 const TEST_PASSWORD = 'password123';
 
@@ -519,8 +519,42 @@ async function testParseMultipleExpenses() {
   }
 }
 
+async function testUpdatePreferences() {
+  logStep(18, 'Update User Preferences');
+
+  try {
+    const preferences = {
+      currency: 'EUR',
+      name: 'Test User',
+      monthly_budget: 1500
+    };
+
+    log('Updating preferences:', colors.yellow);
+    logData(preferences);
+
+    const response = await axios.put(
+      `${BASE_URL}/api/auth/preferences`,
+      preferences,
+      {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      }
+    );
+
+    logSuccess('Preferences updated successfully');
+    logData(response.data);
+
+    return true;
+  } catch (error) {
+    logError('Update preferences failed');
+    logData(error.response?.data || error.message);
+    return false;
+  }
+}
+
 async function testFinalStatistics() {
-  logStep(18, 'Final Statistics Summary');
+  logStep(19, 'Final Statistics Summary');
 
   try {
     const response = await axios.get(`${BASE_URL}/api/expenses/statistics`, {
@@ -640,7 +674,11 @@ async function runTests() {
             totalTests++;
             if (await testParseMultipleExpenses()) passedTests++;
 
-            // Test 18: Final Statistics
+            // Test 18: Update Preferences
+            totalTests++;
+            if (await testUpdatePreferences()) passedTests++;
+
+            // Test 19: Final Statistics
             totalTests++;
             if (await testFinalStatistics()) passedTests++;
           }

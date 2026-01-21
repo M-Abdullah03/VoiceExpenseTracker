@@ -41,6 +41,22 @@ const userSchema = new mongoose.Schema({
     type: Boolean,
     default: false,
   },
+  preferences: {
+    currency: {
+      type: String,
+      default: 'USD',
+      enum: ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'INR','PKR'],
+    },
+    name: {
+      type: String,
+      trim: true,
+      default: null,
+    },
+    monthly_budget: {
+      type: Number,
+      default: null,
+    },
+  },
   created_at: {
     type: Date,
     default: Date.now,
