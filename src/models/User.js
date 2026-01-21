@@ -1,5 +1,6 @@
 const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const { CURRENCY_CODES } = require('../config/currencies');
 
 const userSchema = new mongoose.Schema({
   email: {
@@ -45,7 +46,7 @@ const userSchema = new mongoose.Schema({
     currency: {
       type: String,
       default: 'USD',
-      enum: ['USD', 'EUR', 'GBP', 'CAD', 'AUD', 'JPY', 'INR','PKR'],
+      enum: CURRENCY_CODES,
     },
     name: {
       type: String,

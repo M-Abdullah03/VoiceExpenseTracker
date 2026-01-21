@@ -3,6 +3,7 @@ const jwtService = require('../services/jwtService');
 const otpService = require('../services/otpService');
 const oauthService = require('../services/oauthService');
 const emailService = require('../services/emailService');
+const { CURRENCIES } = require('../config/currencies');
 const { createAuthenticationError, createValidationError, ErrorCodes } = require('../utils/errors');
 
 class AuthController {
@@ -250,6 +251,20 @@ class AuthController {
         success: true,
         data: {
           preferences: updatedUser.preferences,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Get available currencies
+  getCurrencies(req, res, next) {
+    try {
+      res.json({
+        success: true,
+        data: {
+          currencies: CURRENCIES,
         },
       });
     } catch (error) {

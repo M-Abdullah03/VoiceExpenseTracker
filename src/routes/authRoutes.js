@@ -15,6 +15,7 @@ router.post('/verify-otp', validateOTP, authController.verifyOTP);
 router.post('/resend-otp', authController.resendOTP);
 router.post('/login', validateLogin, authController.login);
 router.post('/google', validateGoogleToken, authController.googleAuth);
+router.get('/currencies', authController.getCurrencies);
 
 // Protected routes
 router.get('/me', authenticate, authController.getMe);

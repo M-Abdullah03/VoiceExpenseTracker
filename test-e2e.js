@@ -10,7 +10,9 @@ const axios = require('axios');
 
 // Configuration
 const BASE_URL = 'https://voice-expense-tracker-mocha.vercel.app';
-const TEST_EMAIL = `test-${Date.now()}@example.com`;
+// const TEST_EMAIL = `test-${Date.now()}@example.com`;
+const TEST_EMAIL = `m18ab03@gmail.com`;
+// 
 const TEST_PASSWORD = 'password123';
 
 // Colors for console output
