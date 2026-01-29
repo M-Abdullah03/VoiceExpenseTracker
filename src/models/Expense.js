@@ -6,7 +6,7 @@ const CATEGORIES = [
   'Transport',
   'Rent',
   'Entertainment',
-  'Other',
+  'Other', 
 ];
 
 const expenseSchema = new mongoose.Schema({

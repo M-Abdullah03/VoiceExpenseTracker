@@ -1,18 +1,38 @@
 const { Expense, CATEGORIES } = require('../models/Expense');
 const aiService = require('../services/aiService');
+const transcriptionService = require('../services/transcriptionService');
 const config = require('../config/config');
 const { createNotFoundError, createValidationError } = require('../utils/errors');
+const fs = require('fs').promises;
 
 class ExpenseController {
-  // Parse transcription using AI
+  // Parse transcription using AI (accepts text or audio file)
   async parseTranscription(req, res, next) {
-    try {
-      const { transcription } = req.body;
-      const user = req.user;
+    let tempFilePath = null;
 
-      if (!transcription) {
-        throw createValidationError('Transcription is required');
+    try {
+      const user = req.user;
+      let transcription = req.body.transcription;
+
+      // If audio file is uploaded, transcribe it first
+      if (req.file) {
+        console.log('Audio file uploaded:', req.file.originalname);
+        tempFilePath = req.file.path;
+
+        // Transcribe audio using Groq Whisper
+        transcription = await transcriptionService.transcribeAudio(tempFilePath);
+
+        if (!transcription || transcription.trim().length === 0) {
+          throw createValidationError('No speech detected in the audio file');
+        }
       }
+
+      // Validate transcription
+      if (!transcription) {
+        throw createValidationError('Transcription or audio file is required');
+      }
+
+      console.log('Processing transcription:', transcription);
 
       // Parse expenses using AI service
       const result = await aiService.parseExpenses(transcription, user);
@@ -30,6 +50,16 @@ class ExpenseController {
       });
     } catch (error) {
       next(error);
+    } finally {
+      // Clean up temporary file
+      if (tempFilePath) {
+        try {
+          await fs.unlink(tempFilePath);
+          console.log('Cleaned up temp file:', tempFilePath);
+        } catch (err) {
+          console.error('Failed to delete temp file:', err);
+        }
+      }
     }
   }
 
