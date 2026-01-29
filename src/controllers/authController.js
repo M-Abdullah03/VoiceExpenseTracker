@@ -190,7 +190,18 @@ class AuthController {
     try {
       const { idToken } = req.body;
 
+      if (!idToken) {
+        throw createValidationError('Google ID token is required');
+      }
+
       const result = await oauthService.authenticateWithGoogle(idToken);
+
+      // Send welcome email for new users (don't await to avoid blocking response)
+      if (result.isNewUser) {
+        const userName = result.user.email.split('@')[0];
+        emailService.sendWelcomeEmail(result.user.email, userName)
+          .catch(err => console.error('Failed to send welcome email:', err));
+      }
 
       res.json({
         success: true,

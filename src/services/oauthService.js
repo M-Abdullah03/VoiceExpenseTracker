@@ -34,6 +34,7 @@ class OAuthService {
 
   async authenticateWithGoogle(idToken) {
     const googleData = await this.verifyGoogleToken(idToken);
+    let isNewUser = false;
 
     // Check if user exists
     let user = await User.findOne({
@@ -55,6 +56,7 @@ class OAuthService {
       }
     } else {
       // Create new user
+      isNewUser = true;
       user = await User.create({
         email: googleData.email,
         oauth_provider: 'google',
@@ -62,6 +64,7 @@ class OAuthService {
         profile_image_url: googleData.profileImage,
         email_verified: true, // OAuth users don't need OTP verification
         plan_status: 'trial',
+        trial_started_at: new Date(),
       });
     }
 
@@ -75,8 +78,14 @@ class OAuthService {
         profile_image_url: user.profile_image_url,
         plan_status: user.plan_status,
         email_verified: user.email_verified,
+        preferences: user.preferences || {
+          currency: 'USD',
+          name: null,
+          monthly_budget: null,
+        },
       },
       token,
+      isNewUser,
     };
   }
 }
