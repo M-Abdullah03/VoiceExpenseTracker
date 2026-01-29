@@ -54,7 +54,7 @@ class ExpenseController {
       // Clean up temporary file
       if (tempFilePath) {
         try {
-          await fs.unlink(tempFilePath);
+          // await fs.unlink(tempFilePath);
           console.log('Cleaned up temp file:', tempFilePath);
         } catch (err) {
           console.error('Failed to delete temp file:', err);

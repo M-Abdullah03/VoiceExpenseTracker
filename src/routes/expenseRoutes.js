@@ -1,15 +1,32 @@
 const express = require('express');
 const multer = require('multer');
 const path = require('path');
+const os = require('os');
+const fs = require('fs');
 const router = express.Router();
 const expenseController = require('../controllers/expenseController');
 const authenticate = require('../middleware/auth');
 const { canModifyExpenses, requireEmailVerification } = require('../middleware/planGating');
 
+// Get upload directory (use system temp for production, local uploads for dev)
+const getUploadDir = () => {
+  if (process.env.NODE_ENV === 'production') {
+    // Use system temp directory in production (works on Vercel, Heroku, etc.)
+    return os.tmpdir();
+  } else {
+    // Use local uploads directory in development
+    const uploadsDir = path.join(__dirname, '../../uploads');
+    if (!fs.existsSync(uploadsDir)) {
+      fs.mkdirSync(uploadsDir, { recursive: true });
+    }
+    return uploadsDir;
+  }
+};
+
 // Configure multer storage to preserve file extensions
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, 'uploads/');
+    cb(null, getUploadDir());
   },
   filename: (req, file, cb) => {
     // Generate unique filename with original extension
