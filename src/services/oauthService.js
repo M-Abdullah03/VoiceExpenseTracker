@@ -5,14 +5,26 @@ const jwtService = require('./jwtService');
 
 class OAuthService {
   constructor() {
-    this.googleClient = new OAuth2Client(
-      config.GOOGLE_CLIENT_ID,
-      config.GOOGLE_CLIENT_SECRET,
-      config.GOOGLE_CALLBACK_URL
-    );
+    // Initialize Google OAuth client only if credentials are configured
+    if (config.GOOGLE_CLIENT_ID && config.GOOGLE_CLIENT_SECRET) {
+      this.googleClient = new OAuth2Client(
+        config.GOOGLE_CLIENT_ID,
+        config.GOOGLE_CLIENT_SECRET,
+        config.GOOGLE_CALLBACK_URL
+      );
+    } else {
+      this.googleClient = null;
+      console.warn('⚠️  Google OAuth credentials not configured. Google sign-in will not work.');
+      console.warn('   Add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to your .env file');
+      console.warn('   See GOOGLE_OAUTH_SETUP.md for setup instructions');
+    }
   }
 
   async verifyGoogleToken(idToken) {
+    if (!this.googleClient) {
+      throw new Error('Google OAuth is not configured. Please add GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET to your .env file.');
+    }
+
     try {
       const ticket = await this.googleClient.verifyIdToken({
         idToken,
