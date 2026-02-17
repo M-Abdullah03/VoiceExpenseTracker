@@ -57,6 +57,17 @@ const userSchema = new mongoose.Schema({
       type: Number,
       default: null,
     },
+    category_limits: {
+      type: mongoose.Schema.Types.Mixed,
+      default: {},
+    },
+  },
+  streak: {
+    streak_count: { type: Number, default: 0 },
+    best_streak: { type: Number, default: 0 },
+    last_log_ts: { type: String, default: null },
+    last_log_local_date: { type: String, default: null },
+    timezone: { type: String, default: null },
   },
   created_at: {
     type: Date,

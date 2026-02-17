@@ -92,7 +92,7 @@ If you didn't request this verification code, you can safely ignore this email.
 
 © 2026 VoiceExpense. All rights reserved.
     `;
-
+    console.log(`Sending OTP email to ${email} with code: ${otp}`); 
     return await this.sendEmail({
       to: email,
       subject,

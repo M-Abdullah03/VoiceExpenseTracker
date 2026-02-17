@@ -233,6 +233,13 @@ class AuthController {
               name: null,
               monthly_budget: null,
             },
+            streak: user.streak || {
+              streak_count: 0,
+              best_streak: 0,
+              last_log_ts: null,
+              last_log_local_date: null,
+              timezone: null,
+            },
           },
         },
       });
@@ -245,12 +252,13 @@ class AuthController {
   async updatePreferences(req, res, next) {
     try {
       const user = req.user;
-      const { currency, name, monthly_budget } = req.body;
+      const { currency, name, monthly_budget, category_limits } = req.body;
 
       const updates = {};
       if (currency !== undefined) updates['preferences.currency'] = currency;
       if (name !== undefined) updates['preferences.name'] = name;
       if (monthly_budget !== undefined) updates['preferences.monthly_budget'] = monthly_budget;
+      if (category_limits !== undefined) updates['preferences.category_limits'] = category_limits;
 
       const updatedUser = await User.findByIdAndUpdate(
         user._id,
@@ -262,6 +270,35 @@ class AuthController {
         success: true,
         data: {
           preferences: updatedUser.preferences,
+        },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  // Update streak
+  async updateStreak(req, res, next) {
+    try {
+      const { streak_count, best_streak, last_log_ts, last_log_local_date, timezone } = req.body;
+
+      const updates = {};
+      if (streak_count !== undefined) updates['streak.streak_count'] = streak_count;
+      if (best_streak !== undefined) updates['streak.best_streak'] = best_streak;
+      if (last_log_ts !== undefined) updates['streak.last_log_ts'] = last_log_ts;
+      if (last_log_local_date !== undefined) updates['streak.last_log_local_date'] = last_log_local_date;
+      if (timezone !== undefined) updates['streak.timezone'] = timezone;
+
+      const updatedUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { $set: updates },
+        { new: true, runValidators: true }
+      );
+
+      res.json({
+        success: true,
+        data: {
+          streak: updatedUser.streak,
         },
       });
     } catch (error) {

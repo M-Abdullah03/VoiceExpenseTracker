@@ -20,5 +20,6 @@ router.get('/currencies', authController.getCurrencies);
 // Protected routes
 router.get('/me', authenticate, authController.getMe);
 router.put('/preferences', authenticate, authController.updatePreferences);
+router.put('/streak', authenticate, authController.updateStreak);
 
 module.exports = router;
